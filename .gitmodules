@@ -1,0 +1,3 @@
+[submodule "protomodule"]
+	path = protomodule
+	url = https://github.com/tktkc72/zetasql-extract-table.git
