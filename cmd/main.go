@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -18,8 +19,10 @@ func main() {
 	}
 	defer conn.Close()
 	client := sqlanalyzer.NewExtractTableNamesClient(conn)
+	flag.Parse()
+	state := flag.Arg(0)
 	request := sqlanalyzer.ExtractTableNamesRequest{
-		Statement: "select * from test join test1 on a = b",
+		Statement: state,
 	}
 	res, err := client.Do(context.Background(), &request)
 	if err != nil {
