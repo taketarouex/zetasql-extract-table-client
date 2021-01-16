@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"flag"
 	"fmt"
 	"log"
@@ -9,11 +11,22 @@ import (
 
 	"github.com/tktkc72/zetasql-extract-table-client/github.com/tktkc72/sqlanalyzer"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func main() {
 	target := os.Getenv("TARGET")
-	conn, err := grpc.Dial(target, grpc.WithInsecure())
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithAuthority(target))
+	systemRoots, err := x509.SystemCertPool()
+	if err != nil {
+		log.Fatalf("err: %v", err)
+	}
+	cred := credentials.NewTLS(&tls.Config{
+		RootCAs: systemRoots,
+	})
+	opts = append(opts, grpc.WithTransportCredentials(cred))
+	conn, err := grpc.Dial(target, opts...)
 	if err != nil {
 		log.Fatalf("err: %v", err)
 	}
